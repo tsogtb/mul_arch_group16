@@ -36,8 +36,27 @@ int main (int argc, const char *argv[]) {
 
 double calculate_pi (int num_threads, int samples) {
     double pi;
+    double x, y;
+    int i;
+    int pcount = 0;
+    int count = 0;
+    #pragma omp parallel private(x, y) firstprivate(pcount) shared(count)
+    {   
+        pcount = 0;
+        rand_gen gen = init_rand();
+        //statically scheduled parallel for (i is taken care of internally by openmp)
+        #pragma omp for schedule(static) nowait 
+            for(i = 0; i < samples; i++) {
+                x = next_rand(gen);
+                y = next_rand(gen);
+                pcount += ((x*x + y*y) < 1);
+            } 
+        //critical
+        #pragma omp atomic
+        count += pcount;
+    } //end of parallel section
 
-    /* Your code goes here */
+    pi = 4*(((double)count)/samples);
 
     return pi;
 }

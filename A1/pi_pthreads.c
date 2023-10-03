@@ -47,8 +47,8 @@ void* thread_routine(void *thread_struct) {
         x = next_rand(gen);
         y = next_rand(gen);
         ((pithread *)thread_struct)->count += ((x*x + y*y) < 1);
-        printf("count = %d, (tid) = %d\n", ((pithread *)thread_struct)->count,
-                                           ((pithread *)thread_struct)->thread_num);
+        //printf("count = %d, (tid) = %d\n", ((pithread *)thread_struct)->count,
+        //                                   ((pithread *)thread_struct)->thread_num);
     }
     free_rand(gen);
     return NULL;
@@ -69,12 +69,25 @@ double calculate_pi (int num_threads, int samples) {
         container[i].chunk = chunk;
         pthread_create(&tid[i], NULL, thread_routine, &container[i]);
     }
+
     int accum = 0;
     for(int i = 0; i < num_threads; i++){
         pthread_join(tid[i], NULL);
         accum += (container[i]).count;
     }
 
-    pi = 4*( ((double)accum)/samples );
+    if (remainder != 0) {
+        rand_gen gen = init_rand();
+        double x;
+        double y;
+        for(int i = 0; i < remainder; i++) {
+            x = next_rand(gen);
+            y = next_rand(gen);
+            accum += ((x*x + y*y) < 1);
+        }
+        free_rand(gen);
+    }
+
+    pi = 4*( ((double)accum)/samples);
     return pi;
 }
