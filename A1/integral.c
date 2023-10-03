@@ -1,8 +1,8 @@
 /*
 ============================================================================
 Filename    : integral.c
-Author      : Your names goes here
-SCIPER		: Your SCIPER numbers
+Author      : Jean Knubel
+SCIPER		: 328774
 ============================================================================
 */
 
@@ -14,7 +14,7 @@ SCIPER		: Your SCIPER numbers
 double integrate (int num_threads, int samples, int a, int b, double (*f)(double));
 
 int main (int argc, const char *argv[]) {
-
+    //test
     int num_threads, num_samples, a, b;
     double integral;
 
