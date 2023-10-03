@@ -40,9 +40,25 @@ int main (int argc, const char *argv[]) {
 
 
 double integrate (int num_threads, int samples, int a, int b, double (*f)(double)) {
-    double integral;
 
     /* Your code goes here */
+    double delta = (b - a) / (double)samples;
+    double sum;
+    double integral = 0;
 
-    return integral;
+    omp_set_num_threads(num_threads);
+    
+    #pragma omp parallel private(sum)
+    {
+        sum = 0;
+        #pragma omp for
+        for(int i = 0; i<samples; i++){
+            sum += f(a + i*delta) * (b - a);
+        }
+    
+        #pragma omp atomic 
+        integral += sum;
+    }
+
+    return integral / samples;
 }
