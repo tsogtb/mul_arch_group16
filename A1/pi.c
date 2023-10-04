@@ -1,13 +1,14 @@
 /*
 ============================================================================
 Filename    : pi.c
-Author      : Your names goes here
-SCIPER		: Your SCIPER numbers
+Author      : Tsogt Baigalmaa   
+SCIPER		: 345120
 ============================================================================
 */
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "utility.h"
 
 double calculate_pi (int num_threads, int samples);
@@ -45,9 +46,7 @@ double calculate_pi (int num_threads, int samples) {
     omp_set_num_threads(num_threads);
     #pragma omp parallel private(x, y) firstprivate(pcount) shared(count) 
     {   
-        pcount = 0;
         rand_gen gen = init_rand();
-        //statically scheduled parallel for (i is taken care of internally by openmp)
         #pragma omp for schedule(static) nowait 
             for(i = 0; i < samples; i++) {
                 x = next_rand(gen);

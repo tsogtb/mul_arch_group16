@@ -1,14 +1,15 @@
 /*
 ============================================================================
 Filename    : pi.c
-Author      : Your names goes here
-SCIPER		: Your SCIPER numbers
+Author      : Tsogt Baigalmaa
+SCIPER		: 345120
 ============================================================================
 */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
+#include <assert.h>
 #include "utility.h"
 
 double calculate_pi (int num_threads, int samples);
@@ -34,6 +35,8 @@ int main (int argc, const char *argv[]) {
     return 0;
 }
 
+//===========================================================================
+
 typedef struct {
     int chunk;
     int count;
@@ -47,15 +50,14 @@ void* thread_routine(void *thread_struct) {
         x = next_rand(gen);
         y = next_rand(gen);
         ((pithread *)thread_struct)->count += ((x*x + y*y) < 1);
-        //printf("count = %d, (tid) = %d\n", ((pithread *)thread_struct)->count,
-        //                                   ((pithread *)thread_struct)->thread_num);
     }
     free_rand(gen);
     return NULL;
 }
 
-
 double calculate_pi (int num_threads, int samples) {
+    assert(num_threads > 0);
+    assert(samples > 0);
     double pi;
     int chunk = samples / num_threads;
     int remainder = samples - chunk * num_threads;
@@ -76,6 +78,8 @@ double calculate_pi (int num_threads, int samples) {
         accum += (container[i]).count;
     }
 
+    //remaining points are taken care of in case samples
+    //is not a multiple of num_threads.
     if (remainder != 0) {
         rand_gen gen = init_rand();
         double x;
