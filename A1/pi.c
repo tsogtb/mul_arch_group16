@@ -8,6 +8,7 @@ SCIPER		: Your SCIPER numbers
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "utility.h"
 
 double calculate_pi (int num_threads, int samples);
