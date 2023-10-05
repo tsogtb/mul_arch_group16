@@ -8,6 +8,7 @@ SCIPER		: 328774
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "utility.h"
 #include "function.c"
 
@@ -41,8 +42,17 @@ int main (int argc, const char *argv[]) {
 
 double integrate (int num_threads, int samples, int a, int b, double (*f)(double)) {
 
+    //step 1: check variables and split the difference between each evaluated point
+    assert(samples > 0);
+    assert(num_threads >= 1);
+    assert(f != NULL);
+
+    if(a == b){ return 0;}
+
+
+
     /* Your code goes here */
-    double delta = (b - a) / (double)samples;
+    double delta = abs(b - a) / (double)samples;
     double sum;
     double integral = 0;
 
