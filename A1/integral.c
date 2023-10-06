@@ -49,29 +49,30 @@ double integrate (int num_threads, int samples, int a, int b, double (*f)(double
 
     if(a == b){ return 0;}
 
-    double sum;
+    double pcount = 0;
+    double count = 0;
+
     double x;
     double interval = abs(b - a);
-    double integral = 0;
 
     omp_set_num_threads(num_threads);
     
 
-    #pragma omp parallel private(sum, x)
+    #pragma omp parallel private(x) firstpriviate(pcount) shared(count)
     {
         // step 2: each trhead will work on a part of the interval and add the result to a private sum, and then atomicaly increment the global sum at the end
         rand_gen gen = init_rand();
-        sum = 0;
+        pcount = 0;
         #pragma omp for nowait
         for(int i = 0; i<samples; i++){
             x =  next_rand(gen) * interval + a;
-            sum += f(x) * interval;
+            pcount += f(x) * interval;
         }
     
         #pragma omp atomic 
-        integral += sum;
+        count += pcount;
     }
 
     // step 3: compute the integral and return it
-    return integral / samples;
+    return count / samples;
 }
