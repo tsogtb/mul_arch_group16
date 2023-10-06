@@ -42,33 +42,36 @@ int main (int argc, const char *argv[]) {
 
 double integrate (int num_threads, int samples, int a, int b, double (*f)(double)) {
 
-    //step 1: check variables and split the difference between each evaluated point
+    // step 1: check variables and split the difference between each evaluated point
     assert(samples > 0);
     assert(num_threads >= 1);
     assert(f != NULL);
 
     if(a == b){ return 0;}
 
-
-
-    /* Your code goes here */
-    double delta = abs(b - a) / (double)samples;
     double sum;
+    double x;
+    double interval = abs(b - a);
     double integral = 0;
 
     omp_set_num_threads(num_threads);
     
-    #pragma omp parallel private(sum)
+
+    #pragma omp parallel private(sum, x)
     {
+        // step 2: each trhead will work on a part of the interval and add the result to a private sum, and then atomicaly increment the global sum at the end
+        rand_gen gen = init_rand();
         sum = 0;
         #pragma omp for
         for(int i = 0; i<samples; i++){
-            sum += f(a + i*delta) * (b - a);
+            x =  next_rand(gen) * interval + a;
+            sum += f(x) * interval;
         }
     
         #pragma omp atomic 
         integral += sum;
     }
 
+    // step 3: compute the integral and return it
     return integral / samples;
 }
