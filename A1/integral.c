@@ -62,7 +62,7 @@ double integrate (int num_threads, int samples, int a, int b, double (*f)(double
         // step 2: each trhead will work on a part of the interval and add the result to a private sum, and then atomicaly increment the global sum at the end
         rand_gen gen = init_rand();
         sum = 0;
-        #pragma omp for
+        #pragma omp for nowait
         for(int i = 0; i<samples; i++){
             x =  next_rand(gen) * interval + a;
             sum += f(x) * interval;
