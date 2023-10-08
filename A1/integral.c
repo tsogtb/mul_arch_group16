@@ -58,7 +58,7 @@ double integrate (int num_threads, int samples, int a, int b, double (*f)(double
     omp_set_num_threads(num_threads);
     
 
-    #pragma omp parallel private(x) firstpriviate(pcount) shared(count)
+    #pragma omp parallel private(x) firstprivate(pcount) shared(count)
     {
         // step 2: each trhead will work on a part of the interval and add the result to a private sum, and then atomicaly increment the global sum at the end
         rand_gen gen = init_rand();
